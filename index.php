@@ -197,6 +197,25 @@ $basePath        = __DIR__;
                     <span class="btn btn--link">Подробнее →</span>
                 </a>
             </div>
+
+            <!-- Главный бухгалтер — выделенная карточка -->
+            <a href="/uslugi/glavnyj-buhgalter.php" class="card card--featured reveal" style="margin-top:var(--space-lg);display:flex;align-items:center;gap:var(--space-xl);background:linear-gradient(135deg,var(--color-primary-dark) 0%,#1a2040 100%);color:#fff">
+                <div style="flex:0 0 auto">
+                    <div class="card__icon" style="background:rgba(255,255,255,0.12);color:#fff">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                </div>
+                <div style="flex:1;min-width:0">
+                    <div style="font-size:var(--fs-small);font-weight:600;opacity:.7;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Премиум-услуга</div>
+                    <h3 class="card__title" style="color:#fff;margin-bottom:var(--space-xs)">Главный бухгалтер на аутсорсинге</h3>
+                    <p class="card__text" style="color:rgba(255,255,255,.8);margin-bottom:0">Подпись отчётности, учётная политика, взаимодействие с КГД — вместо штатного главбуха за 800 000–1 200 000 ₸/мес. Экономия от 10× при сопоставимой ответственности.</p>
+                </div>
+                <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-xs)">
+                    <div style="font-size:1.5rem;font-weight:700;white-space:nowrap">от 45 000 ₸</div>
+                    <div style="font-size:var(--fs-small);opacity:.7">/месяц</div>
+                    <span class="btn btn--white btn--sm" style="margin-top:var(--space-xs)">Подробнее →</span>
+                </div>
+            </a>
         </div>
     </section>
 

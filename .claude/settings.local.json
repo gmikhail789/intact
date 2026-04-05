@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -c /c/Users/adm/Documents/GitHub/intact/assets/js/forms.js)"
+    ]
+  }
+}

@@ -22,50 +22,50 @@
     document.querySelectorAll('form[data-form]').forEach(initForm);
 
     // Маска телефона +7 777 123 45 67
-    document.querySelectorAll('input[type="tel"][name="phone"]').forEach(initPhoneMask);
+    document.querySelectorAll('input[name="phone"]').forEach(initPhoneMask);
 
+    // ── Маска телефона ──────────────────────────────────────────
     function initPhoneMask(input) {
-        input.placeholder = '+7 ___ ___ __ __';
-        input.maxLength = 16;
+        input.setAttribute('placeholder', '+7 ___ ___ __ __');
+        input.setAttribute('maxlength', '16');
+        input.setAttribute('autocomplete', 'tel');
 
-        function applyMask(raw) {
-            // Оставляем только цифры
-            let digits = raw.replace(/\D/g, '');
-            // Если начинается с 8 — заменяем на 7
-            if (digits.startsWith('8')) digits = '7' + digits.slice(1);
-            // Если начинается не с 7 — добавляем 7 в начало
-            if (digits.length > 0 && !digits.startsWith('7')) digits = '7' + digits;
-            // Ограничиваем до 11 цифр (7 + 10 цифр номера)
-            digits = digits.slice(0, 11);
+        function digits(raw) {
+            let d = raw.replace(/\D/g, '');
+            if (d.charAt(0) === '8') d = '7' + d.slice(1);
+            if (d.length > 0 && d.charAt(0) !== '7') d = '7' + d;
+            return d.slice(0, 11);
+        }
 
-            if (digits.length === 0) return '';
-            let result = '+7';
-            if (digits.length > 1) result += ' ' + digits.slice(1, 4);
-            if (digits.length > 4) result += ' ' + digits.slice(4, 7);
-            if (digits.length > 7) result += ' ' + digits.slice(7, 9);
-            if (digits.length > 9) result += ' ' + digits.slice(9, 11);
-            return result;
+        function format(raw) {
+            const d = digits(raw);
+            if (!d) return '';
+            let r = '+7';
+            if (d.length > 1) r += ' ' + d.slice(1, 4);
+            if (d.length > 4) r += ' ' + d.slice(4, 7);
+            if (d.length > 7) r += ' ' + d.slice(7, 9);
+            if (d.length > 9) r += ' ' + d.slice(9, 11);
+            return r;
         }
 
         input.addEventListener('input', function () {
-            const pos = this.selectionStart;
-            const oldLen = this.value.length;
-            this.value = applyMask(this.value);
-            // Сохраняем позицию курсора
-            const newLen = this.value.length;
-            const newPos = Math.max(0, pos + (newLen - oldLen));
-            this.setSelectionRange(newPos, newPos);
+            const formatted = format(this.value);
+            const caretShift = formatted.length - this.value.length;
+            const caretPos = (this.selectionStart || 0) + caretShift;
+            this.value = formatted;
+            // setSelectionRange недоступен для type=tel в некоторых браузерах
+            try { this.setSelectionRange(caretPos, caretPos); } catch (_) {}
         });
 
         input.addEventListener('keydown', function (e) {
-            if (e.key === 'Backspace' && this.value === '+7') {
+            if (e.key === 'Backspace' && (this.value === '+7 ' || this.value === '+7')) {
                 this.value = '';
                 e.preventDefault();
             }
         });
 
         input.addEventListener('focus', function () {
-            if (this.value === '') this.value = '+7 ';
+            if (!this.value) this.value = '+7 ';
         });
 
         input.addEventListener('blur', function () {
@@ -73,6 +73,7 @@
         });
     }
 
+    // ── Инициализация формы ─────────────────────────────────────
     function initForm(form) {
         // Honeypot
         if (!form.querySelector('[name="website"]')) {
@@ -100,6 +101,7 @@
         });
     }
 
+    // ── Отправка ────────────────────────────────────────────────
     async function handleSubmit(form) {
         const btn = form.querySelector('[type="submit"]');
         const formType = form.dataset.form || 'callback';
@@ -109,8 +111,8 @@
         if (tokenInput) tokenInput.value = Math.floor(Date.now() / 1000).toString();
 
         // Клиентская валидация
-        const errors = validateClient(form);
         clearErrors(form);
+        const errors = validateClient(form);
 
         if (Object.keys(errors).length > 0) {
             showErrors(form, errors);
@@ -151,6 +153,7 @@
         }
     }
 
+    // ── Валидация ───────────────────────────────────────────────
     function validateClient(form) {
         const errors = {};
         const val = (name) => (form.querySelector(`[name="${name}"]`)?.value || '').trim();
@@ -160,9 +163,9 @@
         else if (name.length < 2) errors.name = 'Имя слишком короткое';
 
         const phone = val('phone');
-        const digits = phone.replace(/\D/g, '');
+        const digs = phone.replace(/\D/g, '');
         if (!phone) errors.phone = 'Укажите номер телефона';
-        else if (digits.length < 11) errors.phone = 'Введите номер полностью: +7 ___ ___ __ __';
+        else if (digs.length < 11) errors.phone = 'Введите номер полностью: +7 ___ ___ __ __';
 
         const emailField = form.querySelector('[name="email"]');
         if (emailField) {
@@ -175,6 +178,7 @@
         return errors;
     }
 
+    // ── Сбор данных ─────────────────────────────────────────────
     function collectData(form, formType) {
         const val = (name) => (form.querySelector(`[name="${name}"]`)?.value || '').trim();
         const data = {
@@ -203,6 +207,7 @@
         return data;
     }
 
+    // ── UI ──────────────────────────────────────────────────────
     function showErrors(form, errors) {
         for (const [field, msg] of Object.entries(errors)) {
             const input = form.querySelector(`[name="${field}"]`);
@@ -230,7 +235,6 @@
     }
 
     function showFormMessage(form, text, type) {
-        clearErrors(form);
         const el = document.createElement('div');
         el.className = `form-message form-message--${type}`;
         el.textContent = text;
