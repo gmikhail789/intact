@@ -211,7 +211,7 @@ $basePath        = __DIR__;
                     <p class="card__text" style="color:rgba(255,255,255,.8);margin-bottom:0">Подпись отчётности, учётная политика, взаимодействие с КГД — вместо штатного главбуха за 800 000–1 200 000 ₸/мес. Экономия от 10× при сопоставимой ответственности.</p>
                 </div>
                 <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-xs)">
-                    <div style="font-size:1.5rem;font-weight:700;white-space:nowrap">от 45 000 ₸</div>
+                    <div style="font-size:1.5rem;font-weight:700;white-space:nowrap">от 300 000 ₸</div>
                     <div style="font-size:var(--fs-small);opacity:.7">/месяц</div>
                     <span class="btn btn--white btn--sm" style="margin-top:var(--space-xs)">Подробнее →</span>
                 </div>
