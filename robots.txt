@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /send.php
+Disallow: /config.php
+Disallow: /includes/
+Disallow: /logs/
+Disallow: /template.php
+
+Sitemap: https://intact.kz/sitemap.xml
+Host: intact.kz

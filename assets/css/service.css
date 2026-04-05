@@ -1,0 +1,274 @@
+/* ============================================================
+   INTACT.KZ — Стили страниц услуг (service.css)
+   ============================================================ */
+
+/* Layout: статья + sidebar */
+.service-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--space-2xl);
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .service-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Статья */
+.service-content {
+    max-width: 100%;
+}
+
+.service-content h1 {
+    margin-bottom: var(--space-lg);
+}
+
+.service-content h2 {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-border);
+}
+
+.service-content h2:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
+
+.service-content h3 {
+    margin-top: var(--space-xl);
+}
+
+.service-content p {
+    margin-bottom: var(--space-md);
+    line-height: 1.8;
+}
+
+.service-content .lead {
+    font-size: clamp(1.05rem, 2vw, 1.15rem);
+    color: var(--color-text);
+    line-height: 1.8;
+}
+
+.service-content ul, .service-content ol {
+    margin: var(--space-md) 0 var(--space-lg);
+    padding-left: var(--space-lg);
+}
+
+.service-content ul { list-style: disc; }
+.service-content ol { list-style: decimal; }
+
+.service-content li {
+    margin-bottom: var(--space-xs);
+    line-height: 1.7;
+}
+
+/* Таблица сравнения */
+.comparison-table {
+    overflow-x: auto;
+    margin: var(--space-lg) 0 var(--space-xl);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.comparison-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-small);
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.comparison-table th {
+    background: var(--color-primary);
+    color: #fff;
+    font-weight: 600;
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comparison-table th:last-child {
+    background: var(--color-accent);
+}
+
+.comparison-table tr:last-child td {
+    border-bottom: none;
+}
+
+.comparison-table tr:nth-child(even) td {
+    background: var(--color-bg);
+}
+
+.comparison-table td:last-child {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* CTA-вставка в статье */
+.article-cta {
+    background: var(--color-accent-light);
+    border-left: 4px solid var(--color-accent);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: var(--space-xl);
+    margin: var(--space-xl) 0;
+}
+
+.article-cta h3 {
+    margin-top: 0;
+    color: var(--color-primary-dark);
+}
+
+.article-cta p {
+    color: var(--color-text-light);
+    font-size: var(--fs-small);
+}
+
+/* Sidebar */
+.service-sidebar {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-lg));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+@media (max-width: 1024px) {
+    .service-sidebar {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+.sidebar-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-border);
+}
+
+.sidebar-card h4 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin-bottom: var(--space-md);
+    color: var(--color-primary-dark);
+}
+
+.sidebar-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-links li {
+    margin-bottom: var(--space-xs);
+}
+
+.sidebar-links a {
+    display: block;
+    padding: var(--space-xs) 0;
+    font-size: var(--fs-small);
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    transition: all var(--transition-fast);
+}
+
+.sidebar-links a:hover {
+    color: var(--color-accent);
+    padding-left: 4px;
+}
+
+.sidebar-links li:last-child a {
+    border-bottom: none;
+}
+
+/* FAQ на страницах услуг */
+.service-content .faq-list {
+    margin-top: var(--space-lg);
+}
+
+.service-content .faq-item {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.service-content .faq-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) 0;
+    text-align: left;
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--color-text);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: var(--font-body);
+    gap: var(--space-md);
+}
+
+.service-content .faq-question:hover {
+    color: var(--color-accent);
+}
+
+.service-content .faq-icon {
+    flex-shrink: 0;
+    transition: transform var(--transition-base);
+}
+
+.service-content .faq-item.is-open .faq-icon {
+    transform: rotate(180deg);
+}
+
+.service-content .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+
+.service-content .faq-item.is-open .faq-answer {
+    padding-bottom: var(--space-md);
+}
+
+.service-content .faq-answer p {
+    color: var(--color-text-light);
+    font-size: var(--fs-small);
+}
+
+/* Список преимуществ в статье */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    margin: var(--space-lg) 0;
+}
+
+@media (max-width: 640px) {
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.feature-item {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: flex-start;
+    font-size: var(--fs-small);
+}
+
+.feature-item::before {
+    content: '✓';
+    color: var(--color-success);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
