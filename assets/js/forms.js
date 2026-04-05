@@ -21,6 +21,58 @@
 
     document.querySelectorAll('form[data-form]').forEach(initForm);
 
+    // Маска телефона +7 777 123 45 67
+    document.querySelectorAll('input[type="tel"][name="phone"]').forEach(initPhoneMask);
+
+    function initPhoneMask(input) {
+        input.placeholder = '+7 ___ ___ __ __';
+        input.maxLength = 16;
+
+        function applyMask(raw) {
+            // Оставляем только цифры
+            let digits = raw.replace(/\D/g, '');
+            // Если начинается с 8 — заменяем на 7
+            if (digits.startsWith('8')) digits = '7' + digits.slice(1);
+            // Если начинается не с 7 — добавляем 7 в начало
+            if (digits.length > 0 && !digits.startsWith('7')) digits = '7' + digits;
+            // Ограничиваем до 11 цифр (7 + 10 цифр номера)
+            digits = digits.slice(0, 11);
+
+            if (digits.length === 0) return '';
+            let result = '+7';
+            if (digits.length > 1) result += ' ' + digits.slice(1, 4);
+            if (digits.length > 4) result += ' ' + digits.slice(4, 7);
+            if (digits.length > 7) result += ' ' + digits.slice(7, 9);
+            if (digits.length > 9) result += ' ' + digits.slice(9, 11);
+            return result;
+        }
+
+        input.addEventListener('input', function () {
+            const pos = this.selectionStart;
+            const oldLen = this.value.length;
+            this.value = applyMask(this.value);
+            // Сохраняем позицию курсора
+            const newLen = this.value.length;
+            const newPos = Math.max(0, pos + (newLen - oldLen));
+            this.setSelectionRange(newPos, newPos);
+        });
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && this.value === '+7') {
+                this.value = '';
+                e.preventDefault();
+            }
+        });
+
+        input.addEventListener('focus', function () {
+            if (this.value === '') this.value = '+7 ';
+        });
+
+        input.addEventListener('blur', function () {
+            if (this.value === '+7 ' || this.value === '+7') this.value = '';
+        });
+    }
+
     function initForm(form) {
         // Honeypot
         if (!form.querySelector('[name="website"]')) {
@@ -107,10 +159,10 @@
         if (!name) errors.name = 'Укажите ваше имя';
         else if (name.length < 2) errors.name = 'Имя слишком короткое';
 
-        const phone = val('phone').replace(/[^\d+]/g, '');
+        const phone = val('phone');
         const digits = phone.replace(/\D/g, '');
         if (!phone) errors.phone = 'Укажите номер телефона';
-        else if (digits.length < 10) errors.phone = 'Введите корректный номер';
+        else if (digits.length < 11) errors.phone = 'Введите номер полностью: +7 ___ ___ __ __';
 
         const emailField = form.querySelector('[name="email"]');
         if (emailField) {

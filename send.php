@@ -526,7 +526,7 @@ function sendTelegram(array $lead): void
     $payload = [
         'chat_id'    => $chatId,
         'text'       => $text,
-        'parse_mode' => 'MarkdownV2',
+        'parse_mode' => 'HTML',
     ];
 
     $context = stream_context_create([
@@ -551,11 +551,11 @@ function sendTelegram(array $lead): void
 }
 
 /**
- * Форматирование текста для Telegram (MarkdownV2)
+ * Форматирование текста для Telegram (HTML)
  */
 function buildTelegramText(array $lead): string
 {
-    $esc = fn(string $s): string => preg_replace('/([_*\[\]()~`>#+\-=|{}.!\\\\])/u', '\\\\$1', $s);
+    $e = fn(string $s): string => htmlspecialchars($s, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
     $typeEmoji = match ($lead['type']) {
         'callback'   => '📞',
@@ -572,19 +572,19 @@ function buildTelegramText(array $lead): string
     };
 
     $lines = [];
-    $lines[] = "{$typeEmoji} *" . $esc($typeLabel) . "*";
+    $lines[] = "{$typeEmoji} <b>" . $e($typeLabel) . "</b>";
     $lines[] = '';
-    $lines[] = "👤 *Имя:* " . $esc($lead['name']);
-    $lines[] = "📱 *Тел:* " . $esc($lead['phone']);
+    $lines[] = "👤 <b>Имя:</b> " . $e($lead['name']);
+    $lines[] = "📱 <b>Тел:</b> " . $e($lead['phone']);
 
     if ($lead['email']) {
-        $lines[] = "📧 *Email:* " . $esc($lead['email']);
+        $lines[] = "📧 <b>Email:</b> " . $e($lead['email']);
     }
     if ($lead['service']) {
-        $lines[] = "📂 *Услуга:* " . $esc($lead['service']);
+        $lines[] = "📂 <b>Услуга:</b> " . $e($lead['service']);
     }
     if ($lead['message']) {
-        $lines[] = "💬 *Сообщение:* " . $esc($lead['message']);
+        $lines[] = "💬 <b>Сообщение:</b> " . $e($lead['message']);
     }
 
     if (!empty($lead['calc'])) {
@@ -592,23 +592,23 @@ function buildTelegramText(array $lead): string
         $bizLabel = $c['biz_type'] === 'ip' ? 'ИП' : 'ТОО';
         $taxLabel = $c['tax_mode'] === 'simple' ? 'Упрощённый' : 'Общеустановленный';
         $lines[] = '';
-        $lines[] = '🧮 *Параметры калькулятора:*';
-        $lines[] = "• Форма: " . $esc($bizLabel);
-        $lines[] = "• Режим: " . $esc($taxLabel);
-        $lines[] = "• Сотрудников: " . $esc($c['employees']);
-        $lines[] = "• Операций/мес: " . $esc($c['operations']);
+        $lines[] = '🧮 <b>Параметры калькулятора:</b>';
+        $lines[] = "• Форма: " . $e($bizLabel);
+        $lines[] = "• Режим: " . $e($taxLabel);
+        $lines[] = "• Сотрудников: " . $e($c['employees']);
+        $lines[] = "• Операций/мес: " . $e($c['operations']);
         if (!empty($c['extras'])) {
             $extrasMap = ['kadry'=>'Кадровый учёт','esf'=>'ЭСФ','restore'=>'Восстановление','nds'=>'НДС'];
-            $labels = array_map(fn(string $e) => $extrasMap[$e] ?? $e, $c['extras']);
-            $lines[] = "• Доп: " . $esc(implode(', ', $labels));
+            $labels = array_map(fn(string $ex) => $extrasMap[$ex] ?? $ex, $c['extras']);
+            $lines[] = "• Доп: " . $e(implode(', ', $labels));
         }
         if ($c['price'] !== '') {
-            $lines[] = "💰 *Расчёт:* от " . $esc($c['price']) . " ₸/мес";
+            $lines[] = "💰 <b>Расчёт:</b> от " . $e($c['price']) . " ₸/мес";
         }
     }
 
     $lines[] = '';
-    $lines[] = "🕐 " . $esc($lead['date']);
+    $lines[] = "🕐 " . $e($lead['date']);
 
     return implode("\n", $lines);
 }

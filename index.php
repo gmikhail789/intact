@@ -432,7 +432,7 @@ $basePath        = __DIR__;
                         <input type="text" name="name" class="form-input form-input--dark" placeholder="Ваше имя" required>
                     </div>
                     <div class="form-group">
-                        <input type="tel" name="phone" class="form-input form-input--dark" placeholder="+7 (___) ___-__-__" required>
+                        <input type="tel" name="phone" class="form-input form-input--dark" placeholder="+7 ___ ___ __ __" required>
                     </div>
                     <button type="submit" class="btn btn--primary btn--lg" style="width:100%">Перезвоните мне</button>
                     <p style="font-size:var(--fs-xs);opacity:.6;margin-top:var(--space-sm);text-align:center">Нажимая кнопку, вы соглашаетесь с <a href="/privacy-policy.php" style="color:rgba(255,255,255,.8);text-decoration:underline">политикой конфиденциальности</a></p>

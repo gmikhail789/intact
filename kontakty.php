@@ -107,7 +107,7 @@ $basePath        = __DIR__;
                             </div>
                             <div class="form-group">
                                 <label for="cPhone" class="form-label">Телефон</label>
-                                <input type="tel" id="cPhone" name="phone" class="form-input" placeholder="+7 (___) ___-__-__" required>
+                                <input type="tel" id="cPhone" name="phone" class="form-input" placeholder="+7 ___ ___ __ __" required>
                             </div>
                             <div class="form-group">
                                 <label for="cEmail" class="form-label">Email</label>

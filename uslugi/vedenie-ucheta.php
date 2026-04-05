@@ -291,7 +291,7 @@ $basePath        = dirname(__DIR__);
                                 <input type="text" name="name" class="form-input" placeholder="Ваше имя" required>
                             </div>
                             <div class="form-group">
-                                <input type="tel" name="phone" class="form-input" placeholder="+7 (___) ___-__-__" required>
+                                <input type="tel" name="phone" class="form-input" placeholder="+7 ___ ___ __ __" required>
                             </div>
                             <button type="submit" class="btn btn--primary" style="width:100%">Получить консультацию</button>
                         </form>

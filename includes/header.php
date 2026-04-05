@@ -11,13 +11,9 @@
 
         <!-- Логотип -->
         <a href="/" class="logo" aria-label="Intact — на главную">
-            <svg class="logo__icon" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="40" height="40" rx="5" fill="#C0392B"/>
-                <path d="M23 7L31 11.5V20.5L23 25L15 20.5V11.5L23 7Z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
-                <path d="M23 10L28.5 13V19L23 22L17.5 19V13L23 10Z" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-linejoin="round"/>
-                <line x1="5" y1="35" x2="16" y2="26" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
-                <line x1="5" y1="31" x2="13" y2="24.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
-                <line x1="5" y1="27" x2="10" y2="23" stroke="rgba(255,255,255,0.5)" stroke-width="1.8" stroke-linecap="round"/>
+            <svg class="logo__icon" width="44" height="44" viewBox="0 0 186 207" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="55.9752" cy="109.424" r="15.3775" fill="#EE1B1D"/>
+                <path d="M92.0394 0H0V11.2528H73.1888C73.1888 11.2528 106.844 8.47109 117.91 38.5415C124.484 56.4054 118.981 75.0946 112.765 85.2735C107.793 93.4166 89.3526 105.333 80.8009 109.947C83.9365 114.672 92.7664 128.285 103.001 144.941C115.794 165.761 122.337 176.98 132.794 188.395C151.1 208.379 185.907 205.527 185.907 205.527V195.989C184.318 195.571 178.89 194.017 170.963 189.301C163.036 184.585 156.687 176.341 150.144 166.996L110.39 105.809C110.39 105.809 126.731 98.2174 136.061 88.124C151.623 71.2894 154.423 44.1058 143.744 26.5317C133.844 10.2396 111.755 -7.06481e-06 92.0394 0Z" fill="#EE1B1D"/>
             </svg>
             <span class="logo__name">intact</span>
         </a>
