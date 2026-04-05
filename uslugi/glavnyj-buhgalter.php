@@ -193,7 +193,7 @@ $basePath        = dirname(__DIR__);
                 <div style="font-size:1.5rem;font-weight:700;color:var(--color-primary-dark);margin:var(--space-sm) 0">от 300 000 ₸ <span style="font-size:var(--fs-small);font-weight:400;color:var(--color-text-light)">/мес</span></div>
                 <p style="font-size:var(--fs-small);color:var(--color-text-light)">Для ИП</p>
                 <hr class="divider" style="margin:var(--space-md) 0">
-                <div style="font-size:1.5rem;font-weight:700;color:var(--color-primary-dark);margin:var(--space-sm) 0">от 85 000 ₸ <span style="font-size:var(--fs-small);font-weight:400;color:var(--color-text-light)">/мес</span></div>
+                <div style="font-size:1.5rem;font-weight:700;color:var(--color-primary-dark);margin:var(--space-sm) 0">от 450 000 ₸ <span style="font-size:var(--fs-small);font-weight:400;color:var(--color-text-light)">/мес</span></div>
                 <p style="font-size:var(--fs-small);color:var(--color-text-light)">Для ТОО</p>
                 <a href="/pakety.php" class="btn btn--secondary btn--sm" style="width:100%;margin-top:var(--space-md)">Все пакеты →</a>
             </div>

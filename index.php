@@ -208,7 +208,7 @@ $basePath        = __DIR__;
                 <div style="flex:1;min-width:0">
                     <div style="font-size:var(--fs-small);font-weight:600;opacity:.7;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Премиум-услуга</div>
                     <h3 class="card__title" style="color:#fff;margin-bottom:var(--space-xs)">Главный бухгалтер на аутсорсинге</h3>
-                    <p class="card__text" style="color:rgba(255,255,255,.8);margin-bottom:0">Подпись отчётности, учётная политика, взаимодействие с КГД — вместо штатного главбуха за 800 000–1 200 000 ₸/мес. Экономия от 10× при сопоставимой ответственности.</p>
+                    <p class="card__text" style="color:rgba(255,255,255,.8);margin-bottom:0">Подпись отчётности, учётная политика, взаимодействие с КГД — вместо штатного главбуха за 800 000–1 200 000 ₸/мес. Экономия в 2–4 раза при полной договорной ответственности.</p>
                 </div>
                 <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-xs)">
                     <div style="font-size:1.5rem;font-weight:700;white-space:nowrap">от 300 000 ₸</div>

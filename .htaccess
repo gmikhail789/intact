@@ -9,7 +9,7 @@ Options -Indexes
 AddDefaultCharset UTF-8
 
 # ── Защита конфиденциальных файлов ──
-<FilesMatch "^(config\.php|\.env|\.git|composer\.(json|lock))$">
+<FilesMatch "^(config\.php|\.env|\.git|composer\.(json|lock)|DEPLOY\.md)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
@@ -19,10 +19,45 @@ AddDefaultCharset UTF-8
     </IfModule>
 </FilesMatch>
 
+# ── Блокировка вредоносных расширений (попытки залить шелл) ──
+<FilesMatch "\.(php[0-9]?|phtml|phar|shtml|cgi|pl|py|rb|sh|bat|cmd|exe|dll|htaccess)$">
+    <IfModule mod_authz_core.c>
+        <RequireAll>
+            Require all granted
+        </RequireAll>
+    </IfModule>
+</FilesMatch>
+
 # ── Защита /logs/ ──
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteRule ^logs/ - [F,L]
+</IfModule>
+
+# ── Блокировка SQL-инъекций и XSS в URL ──
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{QUERY_STRING} (union|select|insert|drop|delete|update|cast|exec|declare|script|alert|eval|base64|vbscript) [NC,OR]
+    RewriteCond %{QUERY_STRING} (\.\./|\.\.\\|%2e%2e%2f|%252e%252e%252f) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# ── Блокировка сканеров и ботов по User-Agent ──
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_USER_AGENT} (curl|python|wget|scrapy|libwww|sqlmap|nikto|nmap|masscan|zgrab|dirbuster|gobuster|nuclei|hydra|metasploit) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# ── Прямой доступ к send.php только через POST с нашего домена ──
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Разрешаем OPTIONS (preflight)
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^send\.php$ - [L]
+    # Блокируем GET/HEAD к send.php
+    RewriteCond %{REQUEST_METHOD} !POST
+    RewriteRule ^send\.php$ - [F,L]
 </IfModule>
 
 # ── HTTPS редирект ──
@@ -39,6 +74,7 @@ AddDefaultCharset UTF-8
 
 # ── Обработка 404 ──
 ErrorDocument 404 /404.php
+ErrorDocument 403 /404.php
 
 # ═══════════════════════════════════════════════════════════
 # GZIP-сжатие
@@ -70,7 +106,7 @@ ErrorDocument 404 /404.php
     # CSS / JS — 7 дней
     ExpiresByType text/css                      "access plus 7 days"
     ExpiresByType text/javascript               "access plus 7 days"
-    ExpiresByType application/javascript         "access plus 7 days"
+    ExpiresByType application/javascript        "access plus 7 days"
 
     # Изображения — 30 дней
     ExpiresByType image/jpeg                    "access plus 30 days"

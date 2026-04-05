@@ -40,10 +40,42 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     jsonResponse(false, message: 'Метод не поддерживается.');
 }
 
+// ── Блокировка подозрительных User-Agent (боты, скрипты) ──
+$userAgent = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
+$badAgents = ['curl', 'python-requests', 'python-urllib', 'wget', 'libwww', 'scrapy',
+               'go-http', 'java/', 'okhttp', 'axios/', 'node-fetch', 'php-http',
+               'perl/', 'ruby', 'java/1.', 'bot', 'crawler', 'spider'];
+foreach ($badAgents as $bad) {
+    if (str_contains($userAgent, $bad)) {
+        http_response_code(403);
+        jsonResponse(false, message: 'Доступ запрещён.');
+    }
+}
+// Полностью пустой UA — тоже бот
+if ($userAgent === '') {
+    http_response_code(403);
+    jsonResponse(false, message: 'Доступ запрещён.');
+}
+
+// ── Проверка Referer — запрос должен прийти с нашего сайта ──
+$referer = $_SERVER['HTTP_REFERER'] ?? '';
+$refererHost = parse_url($referer, PHP_URL_HOST);
+$siteHost    = parse_url(SITE_DOMAIN, PHP_URL_HOST);
+if ($refererHost !== $siteHost) {
+    // Также проверяем Origin
+    $originHost = parse_url($origin, PHP_URL_HOST);
+    if ($originHost !== $siteHost) {
+        http_response_code(403);
+        logError("Blocked bad referer: referer={$referer}, origin={$origin}, ip=" . getClientIp());
+        jsonResponse(false, message: 'Доступ запрещён.');
+    }
+}
+
 // ── Rate Limiting по IP ──
 $clientIp = getClientIp();
 if (isRateLimited($clientIp)) {
     http_response_code(429);
+    logError("Rate limited IP: {$clientIp}");
     jsonResponse(false, message: 'Слишком много запросов. Попробуйте через несколько минут.');
 }
 
@@ -62,13 +94,18 @@ if (!empty($data['website'] ?? '')) {
     jsonResponse(true, message: 'Спасибо!');
 }
 
-// ── JS-токен (timestamp) ──
-// Если токен отсутствует (JS не загрузился) — пропускаем проверку
-// Если токен есть — проверяем что не старше 1 часа
+// ── JS-токен (timestamp) — обязателен ──
 $token = (int)($data['_token'] ?? 0);
 $now   = time();
-if ($token > 0 && (($now - $token) > 3600 || ($now - $token) < 0)) {
-    jsonResponse(false, message: 'Ошибка безопасности. Обновите страницу и попробуйте снова.');
+if ($token === 0) {
+    // Токен отсутствует — запрос пришёл не через браузер
+    http_response_code(403);
+    logError("Missing token, ip={$clientIp}, ua={$userAgent}");
+    jsonResponse(false, message: 'Ошибка безопасности. Обновите страницу.');
+}
+if (($now - $token) > 1800 || ($now - $token) < 0) {
+    // Токен старше 30 минут или из будущего
+    jsonResponse(false, message: 'Страница устарела. Обновите и попробуйте снова.');
 }
 
 // ── Определение типа формы ──
@@ -90,15 +127,25 @@ if ($name === '') {
     $errors['name'] = 'Имя содержит недопустимые символы';
 }
 
-// Телефон (обязательно для всех)
+// Телефон (обязательно для всех) — строгая проверка KZ-формата
 $phoneRaw = $data['phone'] ?? '';
-$phone    = preg_replace('/[^\d+]/', '', $phoneRaw);
+$phone    = preg_replace('/[^\d]/', '', $phoneRaw); // только цифры
+// Нормализация: 8XXXXXXXXXX → 7XXXXXXXXXX
+if (strlen($phone) === 11 && $phone[0] === '8') {
+    $phone = '7' . substr($phone, 1);
+}
 if ($phone === '') {
     $errors['phone'] = 'Укажите номер телефона';
 } else {
-    $digits = preg_replace('/\D/', '', $phone);
-    if (strlen($digits) < 10 || strlen($digits) > 15) {
-        $errors['phone'] = 'Номер телефона должен содержать 10-15 цифр';
+    $isValidKz = false;
+    if (strlen($phone) === 11 && $phone[0] === '7') {
+        $prefix3 = substr($phone, 1, 3); // 3 цифры после «7»
+        $isValidKz = in_array($prefix3, KZ_PHONE_PREFIXES, true);
+    }
+    if (!$isValidKz) {
+        $errors['phone'] = 'Укажите казахстанский номер в формате +7 7XX XXX XX XX';
+    } else {
+        $phone = '+7' . substr($phone, 1); // форматируем: +77071234567
     }
 }
 
@@ -142,8 +189,18 @@ if (!empty($errors)) {
     jsonResponse(false, errors: $errors);
 }
 
+// ── Rate limit по номеру телефона (защита от повторных заявок) ──
+if (!empty($phone) && isPhoneRateLimited($phone)) {
+    http_response_code(429);
+    logError("Phone rate limited: phone={$phone}, ip={$clientIp}");
+    jsonResponse(false, message: 'Заявка с этого номера уже принята. Мы перезвоним вам в ближайшее время.');
+}
+
 // ── Записываем rate limit ──
 recordRequest($clientIp);
+if (!empty($phone)) {
+    recordPhoneRequest($phone);
+}
 
 // ── Формируем данные заявки ──
 $lead = [
@@ -298,6 +355,63 @@ function loadRateLimitData(): array
         return [];
     }
     $content = file_get_contents(RATE_LIMIT_FILE);
+    return json_decode($content, true) ?: [];
+}
+
+/**
+ * Проверка rate limit по номеру телефона
+ */
+function isPhoneRateLimited(string $phone): bool
+{
+    $data = loadPhoneRateLimitData();
+    $now  = time();
+    $key  = md5($phone);
+
+    $requests = array_filter(
+        $data[$key] ?? [],
+        fn(int $ts): bool => ($now - $ts) < RATE_LIMIT_PHONE_WINDOW
+    );
+
+    return count($requests) >= RATE_LIMIT_PHONE_MAX;
+}
+
+/**
+ * Запись заявки в rate limit по телефону
+ */
+function recordPhoneRequest(string $phone): void
+{
+    $file = sys_get_temp_dir() . '/intact_phone_limit.json';
+    $data = [];
+    if (file_exists($file)) {
+        $content = file_get_contents($file);
+        $data = json_decode($content, true) ?: [];
+    }
+    $now = time();
+    $key = md5($phone);
+
+    $data[$key] = array_filter(
+        $data[$key] ?? [],
+        fn(int $ts): bool => ($now - $ts) < RATE_LIMIT_PHONE_WINDOW
+    );
+    $data[$key][] = $now;
+
+    // Чистка устаревших записей
+    foreach ($data as $k => $timestamps) {
+        $data[$k] = array_filter($timestamps, fn(int $ts): bool => ($now - $ts) < RATE_LIMIT_PHONE_WINDOW);
+        if (empty($data[$k])) unset($data[$k]);
+    }
+
+    file_put_contents($file, json_encode($data), LOCK_EX);
+}
+
+/**
+ * Загрузка данных phone rate limit
+ */
+function loadPhoneRateLimitData(): array
+{
+    $file = sys_get_temp_dir() . '/intact_phone_limit.json';
+    if (!file_exists($file)) return [];
+    $content = file_get_contents($file);
     return json_decode($content, true) ?: [];
 }
 
@@ -609,6 +723,7 @@ function buildTelegramText(array $lead): string
 
     $lines[] = '';
     $lines[] = "🕐 " . $e($lead['date']);
+    $lines[] = "🌐 IP: <code>" . $e($lead['ip']) . "</code>";
 
     return implode("\n", $lines);
 }
