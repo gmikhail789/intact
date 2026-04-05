@@ -9,8 +9,8 @@ declare(strict_types=1);
  */
 
 // ── Telegram Bot API ──
-define('TELEGRAM_BOT_TOKEN', '');          // Токен из @BotFather
-define('TELEGRAM_CHAT_ID', '');            // ID чата (узнать через @userinfobot)
+define('TELEGRAM_BOT_TOKEN', '8745221779:AAEFQWWsy68HyLVpA8ILWnwSX2Hu-22pCHs');          // Токен из @BotFather
+define('TELEGRAM_CHAT_ID', '6708367489');            // ID чата (узнать через @userinfobot)
 
 // ── Почта ──
 define('ADMIN_EMAIL', 'info@intact.kz');
